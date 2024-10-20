@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { stopBackgroundProcess } from "../../device.ts";
 
-type RouteParams = { params: { id: number } };
+type RouteParams = { params: { id: string } };
 
 export const GET = (_request: NextRequest, context: RouteParams) => {
     if (!context?.params?.id) {

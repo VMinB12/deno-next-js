@@ -4,7 +4,7 @@ import { getDatabase } from "../db/db.ts";
 export async function GET() {
     try {
         const db = await getDatabase();
-        const rows = await db.all("SELECT * FROM timeseries");
+        const rows = await db.all("SELECT * FROM devices");
         return new Response(JSON.stringify(rows), {
             headers: { "Content-Type": "application/json" },
         });

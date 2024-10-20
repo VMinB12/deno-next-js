@@ -1,10 +1,10 @@
 import { getDatabase } from "../db/db.ts";
 
-export const devices = new Map<number, number>();
+const timerMap = new Map<string, number>();
 
-export function startBackgroundProcess(id: number) {
-    const intervalId = setInterval(async () => {
-        const db = await getDatabase();
+export async function startBackgroundProcess(id: string) {
+    const db = await getDatabase();
+    const processId = setInterval(async () => {
         console.log("Inserting random data for device: " + id);
         await db.run(
             "INSERT INTO timeseries (device_id, timestamp, temperature) VALUES (?, ?, ?)",
@@ -15,17 +15,28 @@ export function startBackgroundProcess(id: number) {
             ],
         );
     }, 1000);
-    devices.set(id, intervalId);
+    timerMap.set(id, processId);
+    await db.run(
+        "INSERT INTO devices (id, running) VALUES (?, ?)",
+        [
+            id,
+            true,
+        ],
+    );
 }
 
-export function stopBackgroundProcess(id: number) {
-    const intervalId = devices.get(id);
-
-    console.log(devices);
-
-    if (intervalId) {
-        clearInterval(intervalId);
-        devices.delete(id);
+export async function stopBackgroundProcess(id: string) {
+    const timer = timerMap.get(id);
+    if (timer) {
+        const db = await getDatabase();
+        clearInterval(timer);
+        await db.run(
+            "UPDATE devices SET running = ? WHERE id = ?",
+            [
+                false,
+                id,
+            ],
+        );
         return new Response(`Stopped background process for device: ${id}`, {
             status: 200,
         });

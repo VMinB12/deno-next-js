@@ -27,7 +27,7 @@ async function initializeDatabase(): Promise<Database> {
     // Create Device table
     await db.exec("DROP TABLE IF EXISTS devices");
     await db.exec(
-        "CREATE TABLE IF NOT EXISTS devices (id INTEGER PRIMARY KEY AUTOINCREMENT, process_id INTEGER, running BOOLEAN)",
+        "CREATE TABLE IF NOT EXISTS devices (id TEXT PRIMARY KEY, running BOOLEAN)",
     );
 
     // Create Timeseries table
